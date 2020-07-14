@@ -1,1 +1,1 @@
-# reviews-api
+# reviews-server
