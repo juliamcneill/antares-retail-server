@@ -7,8 +7,6 @@ services:
       - 3001:3001
     depends_on:
       - mongo
-    volumes:
-      - ./:/reviews-api/server
 
   mongo:
     image: mongo:latest
@@ -19,4 +17,7 @@ services:
     ports:
       - 3002:3002
     volumes:
-      - ./:/reviews-api/db
+      - mongodata:/data/db
+
+volumes:
+  mongodata:
