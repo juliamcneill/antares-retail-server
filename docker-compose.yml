@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  node:
+    build: ./server
+    ports:
+      - 3001:3001
+    depends_on:
+      - mysql
+    volumes:
+      - ./:/reviews-api/server
+
+  mysql:
+    build: ./db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ReviewsApiPassword
+      MYSQL_DATABASE: reviews-api
+    ports:
+      - 3002:3002
+    volumes:
+      - ./:/reviews-api/db
+    exec:
