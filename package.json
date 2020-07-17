@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
-    "db": "node db/schema.js"
+    "db": "node db/connection.js"
   },
   "author": "Julia McNeill",
   "license": "ISC",

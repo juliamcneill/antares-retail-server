@@ -2,22 +2,21 @@ version: "3.8"
 
 services:
   node:
-    build: ./server
+    build: .
     ports:
       - 3001:3001
     depends_on:
-      - mysql
+      - mongo
     volumes:
       - ./:/reviews-api/server
 
-  mysql:
-    build: ./db
+  mongo:
+    image: mongo:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ReviewsApiPassword
-      MYSQL_DATABASE: reviews-api
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ReviewsApiPassword
     ports:
       - 3002:3002
     volumes:
       - ./:/reviews-api/db
-    exec:
