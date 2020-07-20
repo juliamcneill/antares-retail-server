@@ -2,12 +2,16 @@ const mongoose = require("mongoose");
 
 const ReviewsSchema = new mongoose.Schema(
   {
+    id: {
+      type: Number,
+      required: true,
+    },
     product_id: {
       type: Number,
       required: true,
     },
     rating: Number,
-    date: Date,
+    createdAt: Date,
     summary: String,
     body: String,
     recommend: String,
@@ -22,6 +26,21 @@ const ReviewsSchema = new mongoose.Schema(
   }
 );
 
-const Reviews = mongoose.model("Reviews", ReviewsSchema);
+const CharacteristicsSchema = new mongoose.Schema(
+  {
+    id: {
+      type: Number,
+      required: true,
+    },
+    product_id: {
+      type: Number,
+      required: true,
+    },
+    name: String,
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = { Reviews };
+module.exports = { ReviewsSchema, CharacteristicsSchema };
