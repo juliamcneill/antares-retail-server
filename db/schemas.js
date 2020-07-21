@@ -57,8 +57,24 @@ const CharacteristicsReviewsSchema = new mongoose.Schema({
   },
 });
 
+const ReviewsPhotosSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+  },
+  review_id: {
+    type: Number,
+    required: true,
+  },
+  url: {
+    type: String,
+    required: true,
+  },
+});
+
 module.exports = {
   ReviewsSchema,
   CharacteristicsSchema,
   CharacteristicsReviewsSchema,
+  ReviewsPhotosSchema,
 };
