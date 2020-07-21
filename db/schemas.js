@@ -26,21 +26,39 @@ const ReviewsSchema = new mongoose.Schema(
   }
 );
 
-const CharacteristicsSchema = new mongoose.Schema(
-  {
-    id: {
-      type: Number,
-      required: true,
-    },
-    product_id: {
-      type: Number,
-      required: true,
-    },
-    name: String,
+const CharacteristicsSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  product_id: {
+    type: Number,
+    required: true,
+  },
+  name: String,
+});
 
-module.exports = { ReviewsSchema, CharacteristicsSchema };
+const CharacteristicsReviewsSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+  },
+  characteristic_id: {
+    type: Number,
+    required: true,
+  },
+  review_id: {
+    type: Number,
+    required: true,
+  },
+  value: {
+    type: Number,
+    required: true,
+  },
+});
+
+module.exports = {
+  ReviewsSchema,
+  CharacteristicsSchema,
+  CharacteristicsReviewsSchema,
+};
