@@ -17,19 +17,34 @@ mongoose
   });
 
 var ReviewsSchema = require("./db/schemas.js").ReviewsSchema;
-var Reviews = mongoose.model("Reviews", ReviewsSchema, "reviews");
+var Review = mongoose.model("Review", ReviewsSchema, "reviews");
 
 var CharacteristicsSchema = require("./db/schemas.js").CharacteristicsSchema;
-var Characteristics = mongoose.model(
-  "Characteristics",
+var Characteristic = mongoose.model(
+  "Characteristic",
   CharacteristicsSchema,
   "characteristics"
+);
+
+var CharacteristicsReviewsSchema = require("./db/schemas.js")
+  .CharacteristicsReviewsSchema;
+var CharacteristicReview = mongoose.model(
+  "CharacteristicReview",
+  CharacteristicsReviewsSchema,
+  "characteristics_reviews"
+);
+
+var ReviewsPhotosSchema = require("./db/schemas.js").ReviewsPhotosSchema;
+var ReviewPhoto = mongoose.model(
+  "ReviewPhoto",
+  ReviewsPhotosSchema,
+  "reviews_photos"
 );
 
 // get list of reviews based on id, sort type, and count
 // /reviews/${id}/list?sort=${sortString}:asc&count=${count}
 app.get("/reviews/:product_id", (req, res) => {
-  Reviews.find({ product_id: req.params.product_id })
+  Review.find({ product_id: req.params.product_id })
     .sort(
       req.query.sort === "newest"
         ? { createdAt: -1 }
@@ -38,6 +53,7 @@ app.get("/reviews/:product_id", (req, res) => {
         : { helpfulness: 1, createdAt: -1 }
     )
     .limit(parseInt(req.query.count))
+    .lean()
     .then((records) => {
       res.status(200).send(records);
     })
@@ -45,72 +61,6 @@ app.get("/reviews/:product_id", (req, res) => {
       res.status(404).send(error);
     });
 });
-
-// // post review with all fields and characteristics
-// app.post("/reviews", (req, res) => {
-//   Reviews.find({ id: req.query.id })
-//     .then((records) => {
-//       res.status(200).send(records);
-//     })
-//     .catch((error) => {
-//       res.status(404).send(error);
-//     });
-// });
-
-// // change report on review
-// app.put("/reviews", (req, res) => {
-//   Reviews.find({ id: req.query.id })
-//     .then((records) => {
-//       res.status(200).send(records);
-//     })
-//     .catch((error) => {
-//       res.status(404).send(error);
-//     });
-// });
-
-// // get list
-// app.get("/characteristics", (req, res) => {
-//   Characteristics.find({ name: "test" })
-//     .then((records) => {
-//       res.status(200).send(records);
-//     })
-//     .catch((error) => {
-//       res.status(404).send(error);
-//     });
-// });
-
-// // post a new review
-// app.post("/add", (req, res) => {
-//   var maxIndex = Reviews.find({})
-//     .sort({ id: -1 })
-//     .limit(1)
-//     .then((record) => {
-//       console.log("record", record[0]);
-//       var nextIndex = record[0].id + 1;
-//       console.log("nextIndex", nextIndex);
-//       var newReview = new Reviews({
-//         id: nextIndex,
-//         product_id: 1000010,
-//         rating: 5,
-//         summary: "test",
-//         body: "test",
-//         recommend: true,
-//         reported: false,
-//         reviewer_name: "Julia",
-//         reviewer_email: "juliammcneill@gmail.com",
-//         response: "",
-//         helpfulness: 5,
-//       });
-//       newReview
-//         .save()
-//         .then(() => {
-//           res.status(200).send("Success!");
-//         })
-//         .catch((error) => {
-//           res.status(404).send(error);
-//         });
-//     });
-// });
 
 const port = 3000;
 app.listen(port, () => console.log(`Listening at http://localhost:${port}`));

@@ -9,6 +9,7 @@ const ReviewsSchema = new mongoose.Schema(
     product_id: {
       type: Number,
       required: true,
+      index: true,
     },
     rating: Number,
     createdAt: Date,
