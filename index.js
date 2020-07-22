@@ -51,7 +51,6 @@ app.get("/reviews/:product_id", (req, res) => {
         : { helpfulness: 1, createdAt: -1 }
     )
     .limit(parseInt(req.query.count))
-    .lean()
     .then((records) => {
       res.status(200).send(records);
     })
@@ -60,77 +59,68 @@ app.get("/reviews/:product_id", (req, res) => {
     });
 });
 
-// app.post("/reviews/:product_id", (req, res) => {
-//   Review.find({})
-//     .sort({ id: -1 })
-//     .limit(1)
-//     .then((x) => {
-//       var newReview = new Reviews({
-//         id: x[0].id + 1,
-//         product_id: req.params.product_id,
-//         rating: req.body.rating,
-//         summary: req.body.summary,
-//         body: req.body.body,
-//         recommend: req.body.recommend,
-//         reported: false,
-//         reviewer_name: req.body.name,
-//         reviewer_email: req.body.email,
-//         response: "",
-//         helpfulness: 0,
-//       });
-//       newReview
-//         .save()
-//         .then(() => {
-//           res.status(200).send("Success!");
-//         })
-//         .catch((error) => {
-//           res.status(404).send(error);
-//         });
-//       ReviewPhoto.find({})
-//         .sort({ id: -1 })
-//         .limit(1)
-//         .then((y) => {
-//           let index = y[0].id + 1;
-//           for (var photo in req.body.photos) {
-//             let newCharacteristicReview = new CharacteristicReview({
-//               id: index++,
-//               review_id: record[0].id + 1,
-//               url: photo,
-//             });
-//             newCharacteristicReview
-//               .save()
-//               .then(() => {
-//                 res.status(200).send("Success!");
-//               })
-//               .catch((error) => {
-//                 res.status(404).send(error);
-//               });
-//           }
-//         });
-//       CharacteristicReview.find({})
-//         .sort({ id: -1 })
-//         .limit(1)
-//         .then((z) => {
-//           let index = z[0].id + 1;
-//           for (var characteristic in req.body.characteristics) {
-//             let newCharacteristicReview = new CharacteristicReview({
-//               id: index++,
-//               review_id: record[0].id + 1,
-//               characteristics_id: characteristic,
-//               value: characteristics[characteristic],
-//             });
-//             newCharacteristicReview
-//               .save()
-//               .then(() => {
-//                 res.status(200).send("Success!");
-//               })
-//               .catch((error) => {
-//                 res.status(404).send(error);
-//               });
-//           }
-//         });
-//     });
-// });
+app.post("/reviews/:product_id", (req, res) => {
+  Review.find({})
+    .sort({ id: -1 })
+    .limit(1)
+    .then((x) => {
+      var newReview = new Review({
+        id: x[0].id + 1,
+        product_id: req.params.product_id,
+        rating: req.body.rating,
+        summary: req.body.summary,
+        body: req.body.body,
+        recommend: req.body.recommend,
+        reported: false,
+        reviewer_name: req.body.name,
+        reviewer_email: req.body.email,
+        response: "",
+        helpfulness: 0,
+      });
+      newReview.save().catch((error) => {
+        res.status(404).send(error);
+      });
+      ReviewPhoto.find({})
+        .sort({ id: -1 })
+        .limit(1)
+        .then((y) => {
+          let index = y[0].id + 1;
+          for (var photo in req.body.photos) {
+            let newCharacteristicReview = new CharacteristicReview({
+              id: index++,
+              review_id: record[0].id + 1,
+              url: photo,
+            });
+            newCharacteristicReview.save().catch((error) => {
+              res.status(404).send(error);
+            });
+          }
+        })
+        .catch((error) => {
+          res.status(404).send(error);
+        });
+      CharacteristicReview.find({})
+        .sort({ id: -1 })
+        .limit(1)
+        .then((z) => {
+          let index = z[0].id + 1;
+          for (var characteristic in req.body.characteristics) {
+            let newCharacteristicReview = new CharacteristicReview({
+              id: index++,
+              review_id: record[0].id + 1,
+              characteristics_id: parseInt(characteristic),
+              value: characteristics[characteristic],
+            });
+            newCharacteristicReview.save().catch((error) => {
+              res.status(404).send(error);
+            });
+          }
+        });
+    })
+    .then(() => {
+      res.status(200).send("Success!");
+    });
+});
 
 const port = 3000;
 app.listen(port, () => console.log(`Listening at http://localhost:${port}`));
