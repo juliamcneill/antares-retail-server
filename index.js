@@ -1,11 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const { getMaxListeners } = require("process");
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(express.static(__dirname + "/../client/dist"));
 
 mongoose
   .connect("mongodb://mongo:27017/reviews-api", { useNewUrlParser: true })
@@ -41,6 +41,12 @@ var ReviewPhoto = mongoose.model(
   "reviews_photos"
 );
 
+// app.get("/reviewsparser", (req, res) => {
+//   for (i = 0; i < 1000; i++) {
+
+//   }
+// });
+
 app.get("/reviews/:product_id", (req, res) => {
   Review.find({ product_id: req.params.product_id })
     .sort(
@@ -51,6 +57,7 @@ app.get("/reviews/:product_id", (req, res) => {
         : { helpfulness: 1, createdAt: -1 }
     )
     .limit(parseInt(req.query.count))
+    .lean()
     .then((records) => {
       res.status(200).send(records);
     })
@@ -63,6 +70,7 @@ app.post("/reviews/:product_id", (req, res) => {
   Review.find({})
     .sort({ id: -1 })
     .limit(1)
+    .lean()
     .then((x) => {
       var newReview = new Review({
         id: x[0].id + 1,
@@ -83,12 +91,13 @@ app.post("/reviews/:product_id", (req, res) => {
       ReviewPhoto.find({})
         .sort({ id: -1 })
         .limit(1)
+        .lean()
         .then((y) => {
           let index = y[0].id + 1;
           for (var photo in req.body.photos) {
             let newCharacteristicReview = new CharacteristicReview({
               id: index++,
-              review_id: record[0].id + 1,
+              review_id: x[0].id + 1,
               url: photo,
             });
             newCharacteristicReview.save().catch((error) => {
@@ -102,12 +111,13 @@ app.post("/reviews/:product_id", (req, res) => {
       CharacteristicReview.find({})
         .sort({ id: -1 })
         .limit(1)
+        .lean()
         .then((z) => {
           let index = z[0].id + 1;
           for (var characteristic in req.body.characteristics) {
             let newCharacteristicReview = new CharacteristicReview({
               id: index++,
-              review_id: record[0].id + 1,
+              review_id: x[0].id + 1,
               characteristics_id: parseInt(characteristic),
               value: characteristics[characteristic],
             });

@@ -31,6 +31,7 @@ const CharacteristicsSchema = new mongoose.Schema({
   id: {
     type: Number,
     required: true,
+    index: true,
   },
   product_id: {
     type: Number,
@@ -43,6 +44,7 @@ const CharacteristicsReviewsSchema = new mongoose.Schema({
   id: {
     type: Number,
     required: true,
+    index: true,
   },
   characteristic_id: {
     type: Number,
