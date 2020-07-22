@@ -41,11 +41,37 @@ var ReviewPhoto = mongoose.model(
   "reviews_photos"
 );
 
-// app.get("/reviewsparser", (req, res) => {
-//   for (i = 0; i < 1000; i++) {
-
-//   }
-// });
+app.get("/reviewsparser", (req, res) => {
+  for (let i = req.query.start; i <= req.query.end; i++) {
+    Review.find({ id: i })
+      .lean()
+      .then((records) => {
+        CharacteristicReview.updateMany(
+          { review_id: records[0].id },
+          { $set: { review_mongoid: records[0]._id } }
+        )
+          .then(() => {
+            console.log(
+              "successfully replaced " +
+                records[0].id +
+                " with " +
+                records[0]._id +
+                " for record " +
+                i
+            );
+          })
+          .catch((error) => {
+            res.status(404).send(error);
+          });
+      })
+      .catch((error) => {
+        res.status(404).send(error);
+      });
+  }
+  res
+    .status(200)
+    .send("Success for " + req.query.start + " through " + req.query.end + "!");
+});
 
 app.get("/reviews/:product_id", (req, res) => {
   Review.find({ product_id: req.params.product_id })
