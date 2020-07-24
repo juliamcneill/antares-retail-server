@@ -35,7 +35,7 @@ const CharacteristicsSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  name: String,
+  name: { type: String, required: true },
 });
 
 // ? code used to clean up a collection by field and remove duplicates
