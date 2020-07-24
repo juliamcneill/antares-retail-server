@@ -41,7 +41,7 @@ var ReviewPhoto = mongoose.model(
   "reviews_photos"
 );
 
-app.get("/reviews/:product_id", (req, res) => {
+app.get("/reviews/:product_id/list", (req, res) => {
   Review.find({ product_id: req.params.product_id })
     .sort(
       req.query.sort === "newest"
@@ -53,7 +53,11 @@ app.get("/reviews/:product_id", (req, res) => {
     .limit(parseInt(req.query.count))
     .lean()
     .then((records) => {
-      res.status(200).send(records);
+      res.status(200).send({
+        product: req.params.product_id,
+        count: req.query.count,
+        results: records,
+      });
     })
     .catch((error) => {
       res.status(404).send(error);
