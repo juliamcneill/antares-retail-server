@@ -4,7 +4,6 @@ const ReviewsSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
-      required: true,
       index: true,
     },
     product_id: {
@@ -42,22 +41,19 @@ const CharacteristicsSchema = new mongoose.Schema({
 });
 
 const CharacteristicsReviewsSchema = new mongoose.Schema({
-  id: {
-    type: Number,
+  review_id: {
+    type: String,
     required: true,
-    index: true,
+  },
+  old_id: {
+    type: Number,
   },
   characteristic_id: {
     type: Number,
     required: true,
   },
-  review_id: {
+  old_review_id: {
     type: Number,
-    required: true,
-    index: true,
-  },
-  review_mongoid: {
-    type: String,
   },
   value: {
     type: Number,
@@ -66,13 +62,15 @@ const CharacteristicsReviewsSchema = new mongoose.Schema({
 });
 
 const ReviewsPhotosSchema = new mongoose.Schema({
-  id: {
-    type: Number,
+  review_id: {
+    type: String,
     required: true,
   },
-  review_id: {
+  _id_old: {
     type: Number,
-    required: true,
+  },
+  review_id_old: {
+    type: Number,
   },
   url: {
     type: String,
