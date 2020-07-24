@@ -64,6 +64,42 @@ app.get("/reviews/:product_id/list", (req, res) => {
     });
 });
 
+app.get("/reviews/:product_id/meta", (req, res) => {
+  Review.find({ product_id: req.params.product_id })
+    .lean()
+    .then((records) => {
+      CharacteristicReview.find({
+        review_id: records[0]._id + "",
+      }).then((characteristics) => {
+        console.log(characteristics);
+      });
+      return records;
+    })
+    .then((records) => {
+      let ratingsTracker = {};
+      let recsTracker = { "0": 0, "1": 0 };
+      for (let record of records) {
+        ratingsTracker[record.rating]
+          ? ratingsTracker[record.rating]++
+          : (ratingsTracker[record.rating] = 1);
+        record.recommend === 0 ||
+        record.recommend === "false" ||
+        record.recommend == undefined
+          ? recsTracker["0"]++
+          : recsTracker["1"]++;
+      }
+      res.status(200).send({
+        product_id: req.params.product_id,
+        ratings: ratingsTracker,
+        recommended: recsTracker,
+        results: records,
+      });
+    })
+    .catch((error) => {
+      res.status(404).send(error);
+    });
+});
+
 app.post("/reviews/:product_id", (req, res) => {
   let newReview = new Review({
     product_id: req.params.product_id,
@@ -84,7 +120,7 @@ app.post("/reviews/:product_id", (req, res) => {
         .sort({ $natural: -1 })
         .limit(1)
         .then((currentReview) => {
-          for (var characteristic in req.body.characteristics) {
+          for (let characteristic in req.body.characteristics) {
             let newCharacteristicReview = new CharacteristicReview({
               review_id: currentReview[0]._id,
               characteristic_id: parseInt(characteristic),
@@ -97,7 +133,7 @@ app.post("/reviews/:product_id", (req, res) => {
           return currentReview;
         })
         .then((currentReview) => {
-          for (var photo of req.body.photos) {
+          for (let photo of req.body.photos) {
             let newReviewPhoto = new ReviewPhoto({
               review_id: currentReview[0]._id,
               url: photo,
@@ -118,6 +154,20 @@ app.post("/reviews/:product_id", (req, res) => {
       res.status(404).send(error);
     });
 });
+
+// ? script to delete duplicates based on old id
+// app.get("/clean", (req, res) => {
+//   CharacteristicReview.ensureIndex(
+//     { _id_old: 1 },
+//     { unique: true, dropDups: true }
+//   )
+//     .then(() => {
+//       res.status(200).send("Success!");
+//     })
+//     .catch((error) => {
+//       res.status(404).send(error);
+//     });
+// });
 
 // ? script to rename collection field names
 // app.get("/rename", (req, res) => {

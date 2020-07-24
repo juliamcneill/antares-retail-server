@@ -4,7 +4,6 @@ const ReviewsSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
-      index: true,
     },
     product_id: {
       type: Number,
@@ -12,7 +11,7 @@ const ReviewsSchema = new mongoose.Schema(
       index: true,
     },
     rating: Number,
-    createdAt: Date,
+    createdAt: { type: Date, index: true },
     summary: String,
     body: String,
     recommend: String,
@@ -20,7 +19,7 @@ const ReviewsSchema = new mongoose.Schema(
     reviewer_name: String,
     reviewer_email: String,
     response: String,
-    helpfulness: Number,
+    helpfulness: { type: Number, index: true },
   },
   {
     timestamps: true,
@@ -31,7 +30,6 @@ const CharacteristicsSchema = new mongoose.Schema({
   id: {
     type: Number,
     required: true,
-    index: true,
   },
   product_id: {
     type: Number,
@@ -39,6 +37,12 @@ const CharacteristicsSchema = new mongoose.Schema({
   },
   name: String,
 });
+
+// ? code used to clean up a collection by field and remove duplicates
+// CharacteristicsSchema.index(
+//   { _old_id: 1 },
+//   { unique: true, background: true, dropDups: true }
+// );
 
 const CharacteristicsReviewsSchema = new mongoose.Schema({
   review_id: {
