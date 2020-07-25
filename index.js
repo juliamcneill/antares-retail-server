@@ -169,11 +169,24 @@ app.post("/reviews/:product_id", (req, res) => {
           }
         })
         .then(() => {
-          res.status(200).send("Success!");
+          res.sendStatus(201);
         })
         .catch((error) => {
           res.status(404).send(error);
         });
+    })
+    .catch((error) => {
+      res.status(404).send(error);
+    });
+});
+
+app.put("/reviews/helpful/:review_id", (req, res) => {
+  Review.findOneAndUpdate(
+    { id: req.params.review_id },
+    { $inc: { helpfulness: 1 } }
+  )
+    .then(() => {
+      res.sendStatus(204);
     })
     .catch((error) => {
       res.status(404).send(error);

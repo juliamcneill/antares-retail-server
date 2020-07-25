@@ -4,6 +4,7 @@ const ReviewsSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
+      index: true,
     },
     product_id: {
       type: Number,
