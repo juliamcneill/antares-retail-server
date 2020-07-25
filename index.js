@@ -65,39 +65,64 @@ app.get("/reviews/:product_id/list", (req, res) => {
 });
 
 app.get("/reviews/:product_id/meta", (req, res) => {
-  Review.find({ product_id: req.params.product_id })
-    .lean()
-    .then((records) => {
+  Characteristic.find({
+    product_id: req.params.product_id,
+  }).then((characteristics) => {
+    let characteristicsTracker = {};
+    for (let i = 0; i < characteristics.length; i++) {
+      let total = 0;
+      let count = 0;
       CharacteristicReview.find({
-        review_id: records[0]._id + "",
-      }).then((characteristics) => {
-        console.log(characteristics);
-      });
-      return records;
-    })
-    .then((records) => {
-      let ratingsTracker = {};
-      let recsTracker = { "0": 0, "1": 0 };
-      for (let record of records) {
-        ratingsTracker[record.rating]
-          ? ratingsTracker[record.rating]++
-          : (ratingsTracker[record.rating] = 1);
-        record.recommend === 0 ||
-        record.recommend === "false" ||
-        record.recommend == undefined
-          ? recsTracker["0"]++
-          : recsTracker["1"]++;
-      }
-      res.status(200).send({
-        product_id: req.params.product_id,
-        ratings: ratingsTracker,
-        recommended: recsTracker,
-        results: records,
-      });
-    })
-    .catch((error) => {
-      res.status(404).send(error);
-    });
+        characteristic_id: characteristics[i].id,
+        product_id: characteristics[i].product_id,
+      })
+        .then((matches) => {
+          for (let match of matches) {
+            total += match.value;
+            count++;
+          }
+        })
+        .then(() => {
+          characteristicsTracker[characteristics[i].name] = {
+            id: characteristics[i].name,
+            value: total / count,
+          };
+          if (
+            Object.keys(characteristicsTracker).length ===
+            characteristics.length
+          ) {
+            Review.find({ product_id: req.params.product_id })
+              .lean()
+              .then((records) => {
+                let ratingsTracker = {};
+                let recsTracker = { "0": 0, "1": 0 };
+                for (let record of records) {
+                  ratingsTracker[record.rating]
+                    ? ratingsTracker[record.rating]++
+                    : (ratingsTracker[record.rating] = 1);
+                  record.recommend === 0 ||
+                  record.recommend === "false" ||
+                  record.recommend == undefined
+                    ? recsTracker["0"]++
+                    : recsTracker["1"]++;
+                }
+                res.status(200).json({
+                  product_id: req.params.product_id,
+                  ratings: ratingsTracker,
+                  recommended: recsTracker,
+                  characteristics: characteristicsTracker,
+                });
+              })
+              .catch((error) => {
+                res.status(404).send(error);
+              });
+          }
+        })
+        .catch((error) => {
+          res.status(404).send(error);
+        });
+    }
+  });
 });
 
 app.post("/reviews/:product_id", (req, res) => {

@@ -34,6 +34,7 @@ const CharacteristicsSchema = new mongoose.Schema({
   product_id: {
     type: Number,
     required: true,
+    index: true,
   },
   name: { type: String, required: true },
 });
@@ -43,12 +44,18 @@ const CharacteristicsReviewsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  product_id: {
+    type: Number,
+    required: true,
+    index: true,
+  },
   old_id: {
     type: Number,
   },
   characteristic_id: {
     type: Number,
     required: true,
+    index: true,
   },
   old_review_id: {
     type: Number,
