@@ -38,12 +38,6 @@ const CharacteristicsSchema = new mongoose.Schema({
   name: { type: String, required: true },
 });
 
-// ? code used to clean up a collection by field and remove duplicates
-// CharacteristicsSchema.index(
-//   { _old_id: 1 },
-//   { unique: true, background: true, dropDups: true }
-// );
-
 const CharacteristicsReviewsSchema = new mongoose.Schema({
   review_id: {
     type: String,
