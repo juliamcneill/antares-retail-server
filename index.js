@@ -151,6 +151,7 @@ app.post("/reviews/:product_id", (req, res) => {
           for (let characteristic in req.body.characteristics) {
             let newCharacteristicReview = new CharacteristicReview({
               review_id: currentReview[0]._id,
+              product_id: req.params.product_id,
               characteristic_id: parseInt(characteristic),
               value: req.body.characteristics[characteristic],
             });
