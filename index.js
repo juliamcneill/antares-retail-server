@@ -42,7 +42,10 @@ var ReviewPhoto = mongoose.model(
 );
 
 app.get("/reviews/:product_id/list", (req, res) => {
-  Review.find({ product_id: req.params.product_id })
+  Review.find({
+    product_id: req.params.product_id,
+    reported: { $nin: ["true", 1] },
+  })
     .sort(
       req.query.sort === "newest"
         ? { createdAt: -1 }
