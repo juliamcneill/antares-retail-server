@@ -210,20 +210,6 @@ app.put("/reviews/report/:review_id", (req, res) => {
     });
 });
 
-// ? script to delete duplicates based on old id
-// app.get("/clean", (req, res) => {
-//   CharacteristicReview.ensureIndex(
-//     { _id_old: 1 },
-//     { unique: true, dropDups: true }
-//   )
-//     .then(() => {
-//       res.status(200).send("Success!");
-//     })
-//     .catch((error) => {
-//       res.status(404).send(error);
-//     });
-// });
-
 // ? script to rename collection field names
 // app.get("/rename", (req, res) => {
 //   CharacteristicReview.updateMany(
