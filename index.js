@@ -193,6 +193,19 @@ app.put("/reviews/helpful/:review_id", (req, res) => {
     });
 });
 
+app.put("/reviews/report/:review_id", (req, res) => {
+  Review.findOneAndUpdate(
+    { id: req.params.review_id },
+    { $set: { reported: true } }
+  )
+    .then(() => {
+      res.sendStatus(204);
+    })
+    .catch((error) => {
+      res.status(404).send(error);
+    });
+});
+
 // ? script to delete duplicates based on old id
 // app.get("/clean", (req, res) => {
 //   CharacteristicReview.ensureIndex(
