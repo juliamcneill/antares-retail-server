@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+require("dotenv").config();
 
 const app = express();
 
@@ -19,7 +20,14 @@ const options = {
 const connectWithRetry = () => {
   console.log("MongoDB connection with retry");
   mongoose
-    .connect("mongodb://mongo:27017/reviews-api", options)
+    .connect(
+      "mongodb://" +
+        process.env.DB_USERNAME +
+        ":" +
+        process.env.DB_PASSWORD +
+        "@mongo:27017/reviews-api",
+      options
+    )
     .then(() => {
       console.log("MongoDB is connected");
     })
