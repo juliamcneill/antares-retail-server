@@ -7,21 +7,30 @@ const app = express();
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/../client/dist"));
 
-const connectWithRetry = () => {
-  console.log("MongoDB connection with retry");
-  return mongoose.connect("mongodb://mongo:27017/reviews-api", {
-    useNewUrlParser: true,
-  });
+const options = {
+  useNewUrlParser: true,
+  autoIndex: false,
+  reconnectTries: 30,
+  reconnectInterval: 500,
+  poolSize: 10,
+  bufferMaxEntries: 0,
 };
 
-mongoose.connection.on("error", (err) => {
-  console.log(`MongoDB connection error: ${err}`);
-  setTimeout(connectWithRetry, 5000);
-});
+const connectWithRetry = () => {
+  console.log("MongoDB connection with retry");
+  mongoose
+    .connect("mongodb://mongo:27017/reviews-api", options)
+    .then(() => {
+      console.log("MongoDB is connected");
+    })
+    .catch((err) => {
+      console.log(err);
+      console.log("MongoDB connection unsuccessful, retry after 5 seconds.");
+      setTimeout(connectWithRetry, 5000);
+    });
+};
 
-mongoose.connection.on("connected", () => {
-  console.log("MongoDB is connected");
-});
+connectWithRetry();
 
 var ReviewsSchema = require("./db/schemas.js").ReviewsSchema;
 var Review = mongoose.model("Review", ReviewsSchema, "reviews");
