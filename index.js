@@ -7,14 +7,21 @@ const app = express();
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/../client/dist"));
 
-mongoose
-  .connect("mongodb://mongo:27017/reviews-api", { useNewUrlParser: true })
-  .then(() => {
-    console.log("Connection to database was successful!");
-  })
-  .catch((error) => {
-    console.log(error);
+const connectWithRetry = () => {
+  console.log("MongoDB connection with retry");
+  return mongoose.connect("mongodb://mongo:27017/reviews-api", {
+    useNewUrlParser: true,
   });
+};
+
+mongoose.connection.on("error", (err) => {
+  console.log(`MongoDB connection error: ${err}`);
+  setTimeout(connectWithRetry, 5000);
+});
+
+mongoose.connection.on("connected", () => {
+  console.log("MongoDB is connected");
+});
 
 var ReviewsSchema = require("./db/schemas.js").ReviewsSchema;
 var Review = mongoose.model("Review", ReviewsSchema, "reviews");
