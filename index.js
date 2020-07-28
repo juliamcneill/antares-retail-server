@@ -10,7 +10,6 @@ app.use(express.static(__dirname + "/../client/dist"));
 
 const options = {
   useNewUrlParser: true,
-  autoIndex: false,
   reconnectTries: 30,
   reconnectInterval: 500,
   poolSize: 10,
@@ -104,6 +103,7 @@ app.get("/reviews/:product_id/meta", (req, res) => {
           characteristic_id: characteristics[i].id,
           product_id: characteristics[i].product_id,
         })
+          .lean()
           .then((matches) => {
             for (let match of matches) {
               total += match.value;
@@ -175,6 +175,7 @@ app.post("/reviews/:product_id", (req, res) => {
       Review.find()
         .sort({ $natural: -1 })
         .limit(1)
+        .lean()
         .then((currentReview) => {
           for (let characteristic in req.body.characteristics) {
             let newCharacteristicReview = new CharacteristicReview({
@@ -217,6 +218,7 @@ app.put("/reviews/helpful/:review_id", (req, res) => {
     { id: req.params.review_id },
     { $inc: { helpfulness: 1 } }
   )
+    .lean()
     .then(() => {
       res.sendStatus(204);
     })
@@ -230,6 +232,7 @@ app.put("/reviews/report/:review_id", (req, res) => {
     { id: req.params.review_id },
     { $set: { reported: true } }
   )
+    .lean()
     .then(() => {
       res.sendStatus(204);
     })
